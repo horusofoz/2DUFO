@@ -15,6 +15,11 @@ public class PlayerController : MonoBehaviour {
     public Text levelTimerText;
     public Text gameOverText;
 
+    public AudioClip bumpSound;
+    public AudioClip loseSound;
+    public AudioClip pickUpSound;
+    public AudioClip winSound;
+
     private bool gameActive = true;
 
     int pickupCount;
@@ -61,13 +66,26 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    private void OnCollisionEnter2D(Collision2D collision)
+    {
+        if(collision.gameObject.tag == "Wall")
+        {
+            print("bumped wall");
+            SoundManager.instance.PlaySingleWithRandomPitch(bumpSound);
+        }
+    }
+
     private void UpdateScore()
     {
+        SoundManager.instance.PlaySingleWithRandomPitch(pickUpSound);
         score++;
         scoreText.text = "SCORE: " + score;
 
+
+
         if (score == pickupCount)
         {
+            SoundManager.instance.PlaySingle(winSound);
             EndGame();
         }
     }
@@ -78,6 +96,7 @@ public class PlayerController : MonoBehaviour {
         levelTimerText.text = "TIME: " + Mathf.Round(levelTimer).ToString("00");
         if(levelTimer < 0)
         {
+            SoundManager.instance.PlaySingle(loseSound);
             EndGame();
         }
     }
